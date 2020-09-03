@@ -173,19 +173,3 @@
     validate_certs: "{{ k8s_validate_certs | default(omit) }}"
     state: present
     definition: "{{ lookup('template', 'argo.yml.j2') }}"
-
-- name: configure custom CA certificates for git repos
-  k8s:
-    api_key: "{{ k8s_api_key | default(omit) }}"
-    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
-    client_cert: "{{ k8s_client_cert | default(omit) }}"
-    client_key: "{{ k8s_client_key | default(omit) }}"
-    context: "{{ k8s_context | default(omit) }}"
-    host: "{{ k8s_host | default(omit) }}"
-    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
-    password: "{{ k8s_password | default(omit) }}"
-    proxy: "{{ k8s_proxy | default(omit) }}"
-    username: "{{ k8s_username | default(omit) }}"
-    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
-    state: present
-    definition: "{{ lookup('template', 'argo.yml.j2') }}"
