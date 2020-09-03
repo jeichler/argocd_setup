@@ -9,11 +9,11 @@
 
     - name: fail when no token has been provided
       fail:
-        msg: "'k8s_api_token' has to be provided in order to login to ocp"
-      when: k8s_api_token is not defined
+        msg: "'k8s_api_key' has to be provided in order to login to ocp"
+      when: k8s_api_key is not defined
 
   roles:
-    - role: argocd
+    - role: jeichler.argocd_ocp.argocd_setup
       vars:
         argocd_groups:
         - name: argoadmins

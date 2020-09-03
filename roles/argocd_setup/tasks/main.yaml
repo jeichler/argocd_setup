@@ -2,7 +2,7 @@
 
 - name: check if project already exists
   k8s_info:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -21,7 +21,7 @@
 # projectrequest to cover the project request template use case
 - name: create project if it does not exist
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -42,7 +42,7 @@
 
 - name: ensure to have groups created for argo
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -60,7 +60,7 @@
 
 - name: ensure operator group exists to install argocd operator
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -84,7 +84,7 @@
 
 - name: ensure operator group exists to install argocd operator
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -108,7 +108,7 @@
 
 - name: ensure subscription exists for argocd operator
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -135,7 +135,7 @@
 
 - name: get default apps domain
   k8s_info:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -160,7 +160,7 @@
 
 - name: create argocd
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
@@ -176,7 +176,7 @@
 
 - name: configure custom CA certificates for git repos
   k8s:
-    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
     client_cert: "{{ k8s_client_cert | default(omit) }}"
     client_key: "{{ k8s_client_key | default(omit) }}"
