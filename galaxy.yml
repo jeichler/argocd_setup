@@ -45,13 +45,13 @@ tags: [argocd,openshift]
 dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/jeichler/argocd_ocp
+repository: https://github.com/jeichler/ansible_argocd_ocp
 
 # The URL to any online docs
-documentation: https://github.com/jeichler/argocd_ocp
+documentation: https://github.com/jeichler/ansible_argocd_ocp
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/jeichler/argocd_ocp
+homepage: https://github.com/jeichler/ansible_argocd_ocp
 
 # The URL to the collection issue tracker
-issues: https://github.com/jeichler/argocd_ocp/issues
+issues: https://github.com/jeichler/ansible_argocd_ocp/issues
