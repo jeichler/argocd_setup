@@ -17,7 +17,7 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Janine Eichler <janineeichler@gmail.com>
+- Janine Eichler <https://github.com/jeichler>
 
 
 ### OPTIONAL but strongly recommended
