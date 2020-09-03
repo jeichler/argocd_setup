@@ -9,8 +9,8 @@
 
     - name: fail when no token has been provided
       fail:
-        msg: "'k8s_api_key' has to be provided in order to login to ocp"
-      when: k8s_api_key is not defined
+        msg: "'k8s_kubeconfig' has to be provided in order to login to ocp"
+      when: k8s_kubeconfig is not defined
 
   roles:
     - role: jeichler.argocd_ocp.argocd_setup
