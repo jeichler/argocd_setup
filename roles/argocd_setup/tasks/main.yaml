@@ -1,0 +1,191 @@
+---
+
+- name: check if project already exists
+  k8s_info:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    api_version: v1
+    kind: Namespace
+    name: "{{ argocd_namespace }}"
+  register: argocd_project_result
+
+# projectrequest to cover the project request template use case
+- name: create project if it does not exist
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition:
+      kind: ProjectRequest
+      apiVersion: project.openshift.io/v1
+      metadata:
+        name: "{{ argocd_namespace }}"
+  when: argocd_project_result.resources | length == 0
+
+- name: ensure to have groups created for argo
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition: "{{ lookup('template', 'argogroups.yml.j2') }}"
+  loop: "{{ argocd_groups }}"
+
+
+- name: ensure operator group exists to install argocd operator
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ argocd_namespace }}"
+        namespace: "{{ argocd_namespace }}"
+      spec:
+        targetNamespaces:
+        - "{{ argocd_namespace }}"
+
+- name: ensure operator group exists to install argocd operator
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ argocd_namespace }}"
+        namespace: "{{ argocd_namespace }}"
+      spec:
+        targetNamespaces:
+        - "{{ argocd_namespace }}"
+
+- name: ensure subscription exists for argocd operator
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: "{{ argocd_namespace }}"
+        namespace: "{{ argocd_namespace }}"
+      spec:
+        channel: "{{ argocd_operator_channel }}"
+        installPlanApproval: "{{ argocd_operator_approval_strategy }}"
+        source: "{{ argocd_operator_source }}"
+        sourceNamespace: "openshift-marketplace"
+        name: "argocd-operator"
+
+- name: get default apps domain
+  k8s_info:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    api_version: operator.openshift.io/v1
+    kind: IngressController
+    namespace: openshift-ingress-operator
+    name: default
+  register: argocd_default_ingresscontroller
+  when: argocd_route is not defined
+
+- name: set argocd route
+  set_fact:
+    argocd_route: "{{ argocd_name }}.{{ argocd_default_ingresscontroller.resources[0].status.domain }}"
+  when: argocd_route is not defined
+
+- name: create argocd
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition: "{{ lookup('template', 'argo.yml.j2') }}"
+
+- name: configure custom CA certificates for git repos
+  k8s:
+    definitionapi_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition: "{{ lookup('template', 'argo.yml.j2') }}"

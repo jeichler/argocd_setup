@@ -1,0 +1,23 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: "{{ argocd_name }}"
+  namespace: "{{ argocd_namespace }}"
+spec:
+  dex:
+    image: quay.io/redhat-cop/dex
+    openShiftOAuth: true
+    version: "{{ argocd_dex_version }}"
+  rbac:
+    defaultPolicy: 'role:readonly'
+    policy: |
+{% for argogroup in argocd_groups %}
+      g, {{ argogroup.name }}, role:{{ argogroup.permission }}
+{% endfor %}
+    scopes: '[groups]'
+  server:
+    host: "{{ argocd_route }}"
+    insecure: false
+    route:
+      enabled: true

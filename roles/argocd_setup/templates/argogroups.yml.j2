@@ -1,0 +1,9 @@
+---
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: "{{ item.name }}"
+users:
+{% for argouser in item.users %}
+- {{ argouser }}
+{% endfor %}

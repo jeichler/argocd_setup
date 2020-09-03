@@ -1,0 +1,19 @@
+---
+
+argocd_operator_channel: "alpha"
+argocd_operator_approval_strategy: "Automatic"
+argocd_operator_source: "community-operators"
+
+argocd_namespace: "argocd"
+argocd_groups:
+  - name: argoadmins
+    permission: admin
+    users:
+      - jeichler
+  - name: argousers
+    permission: readonly
+    users:
+      - pcfe
+
+argocd_name: "argo"
+argocd_dex_version: "v2.22.0-openshift"
