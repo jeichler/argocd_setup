@@ -107,4 +107,3 @@
 # for now, sticking to oc apply -k
 - name: kustomize deployment for OpenShift
   command: "oc apply -k {{ sealed_secrets_tmpdir.path }}"
-

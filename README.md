@@ -13,7 +13,8 @@ The requirements listed here: <https://docs.ansible.com/ansible/latest/modules/k
 
 ### sealed_secrets_setup
 
-The requirements listed here: <https://docs.ansible.com/ansible/latest/modules/k8s_module.html>
+* The requirements listed here: <https://docs.ansible.com/ansible/latest/modules/k8s_module.html>
+* oc client
 
 ## K8s authentication
 
