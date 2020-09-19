@@ -57,31 +57,6 @@
     definition: "{{ lookup('template', 'argogroups.yml.j2') }}"
   loop: "{{ argocd_groups }}"
 
-
-- name: ensure operator group exists to install argocd operator
-  k8s:
-    api_key: "{{ k8s_api_key | default(omit) }}"
-    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
-    client_cert: "{{ k8s_client_cert | default(omit) }}"
-    client_key: "{{ k8s_client_key | default(omit) }}"
-    context: "{{ k8s_context | default(omit) }}"
-    host: "{{ k8s_host | default(omit) }}"
-    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
-    password: "{{ k8s_password | default(omit) }}"
-    proxy: "{{ k8s_proxy | default(omit) }}"
-    username: "{{ k8s_username | default(omit) }}"
-    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
-    state: present
-    definition:
-      apiVersion: operators.coreos.com/v1
-      kind: OperatorGroup
-      metadata:
-        name: "{{ argocd_namespace }}"
-        namespace: "{{ argocd_namespace }}"
-      spec:
-        targetNamespaces:
-        - "{{ argocd_namespace }}"
-
 - name: ensure operator group exists to install argocd operator
   k8s:
     api_key: "{{ k8s_api_key | default(omit) }}"
@@ -158,7 +133,25 @@
     argocd_route: "{{ argocd_name }}.{{ argocd_default_ingresscontroller.resources[0].status.domain }}"
   when: argocd_route is not defined
 
-- name: create argocd
+- name: create initial secrets
+  k8s:
+    api_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition: "{{ lookup('template', 'initial-secret.yml.j2') }}"
+  when: argocd_initial_secrets is defined and argocd_initial_secrets | length > 0
+  loop: "{{ argocd_initial_secrets }}"
+
+- name: ensure argocd CR is present
   k8s:
     api_key: "{{ k8s_api_key | default(omit) }}"
     ca_cert: "{{ k8s_ca_cert | default(omit) }}"
@@ -173,3 +166,20 @@
     validate_certs: "{{ k8s_validate_certs | default(omit) }}"
     state: present
     definition: "{{ lookup('template', 'argo.yml.j2') }}"
+
+- name: ensure argocd service account has clusteradmin privileges
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: argo-cluster-admin
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+      - kind: ServiceAccount
+        name: argocd-application-controller
+        namespace: "{{ argocd_namespace }}"
+  when: argocd_is_clusteradmin | bool

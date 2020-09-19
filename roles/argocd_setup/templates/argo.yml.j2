@@ -1,4 +1,3 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: ArgoCD
 metadata:
@@ -6,9 +5,7 @@ metadata:
   namespace: "{{ argocd_namespace }}"
 spec:
   dex:
-    image: quay.io/redhat-cop/dex
     openShiftOAuth: true
-    version: "{{ argocd_dex_version }}"
   rbac:
     defaultPolicy: 'role:readonly'
     policy: |
@@ -18,6 +15,24 @@ spec:
     scopes: '[groups]'
   server:
     host: "{{ argocd_route }}"
-    insecure: false
+    insecure: {{ argocd_insecure }}
     route:
       enabled: true
+{% if argocd_insecure | bool == True %}
+      tls:
+        termination: edge
+{% endif %}
+{% if argocd_initial_repositories is defined and argocd_initial_repositories | length > 0 %}
+  initialRepositories: |
+    {{ argocd_initial_repositories | to_nice_yaml(indent=0) | indent(4) }}
+{% endif %}
+{% if argocd_repository_credentials is defined and argocd_repository_credentials | length > 0 %}
+  repositoryCredentials: |
+    {{ argocd_repository_credentials | to_nice_yaml(indent=0) | indent(4) }}
+{% endif %}
+{# 
+{% if argocd_initial_known_hosts is defined -%} # FIXME, does not work with the pipe in the var
+  initialSSHKnownHosts:
+    {{ argocd_initial_known_hosts | to_nice_yaml(indent=0) | indent(4) }}
+{%- endif %}
+#}

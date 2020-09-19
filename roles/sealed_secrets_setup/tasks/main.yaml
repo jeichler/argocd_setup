@@ -1,0 +1,109 @@
+---
+
+# - name: check if kubeseal is already present
+#   stat:
+#     path: "{{ sealed_secrets_binary_path }}"
+#   register: sealed_secrets_kubeseal_result
+
+# - name: check version of kubeseal if present
+#   command: "{{ sealed_secrets_binary_path }} --version"
+#   register: sealed_secrets_kubeseal_version
+#   when: sealed_secrets_kubeseal_result.stat.exists
+
+# FIXME: we do not have checksums on the download page :/
+# so we would need to at least run a version comparison
+
+- name: check if project already exists
+  k8s_info:
+    api_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    api_version: v1
+    kind: Namespace
+    name: "{{ sealed_secrets_namespace }}"
+  register: sealed_secrets_project_result
+
+# projectrequest to cover the project request template use case
+- name: create project if it does not exist
+  k8s:
+    api_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition:
+      kind: ProjectRequest
+      apiVersion: project.openshift.io/v1
+      metadata:
+        name: "{{ sealed_secrets_namespace }}"
+  when: sealed_secrets_project_result.resources | length == 0
+
+- name: ensure secrets are created - BYO certificates case
+  k8s:
+    api_key: "{{ k8s_api_key | default(omit) }}"
+    ca_cert: "{{ k8s_ca_cert | default(omit) }}"
+    client_cert: "{{ k8s_client_cert | default(omit) }}"
+    client_key: "{{ k8s_client_key | default(omit) }}"
+    context: "{{ k8s_context | default(omit) }}"
+    host: "{{ k8s_host | default(omit) }}"
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    password: "{{ k8s_password | default(omit) }}"
+    proxy: "{{ k8s_proxy | default(omit) }}"
+    username: "{{ k8s_username | default(omit) }}"
+    validate_certs: "{{ k8s_validate_certs | default(omit) }}"
+    state: present
+    definition: "{{ lookup('template', 'byo_certs_secret.yaml.j2') }}"
+  when:
+    - 
+
+- name: install kubeseal - the lazy developer always downloads
+  become: True
+  get_url:
+    url: "{{ sealed_secrets_kubeseal_downloadurl }}"
+    dest: "/usr/local/bin/kubeseal"
+    mode: 0755
+    force: yes
+
+- name: ensure tmp dir exists to download controller.yaml file into
+  tempfile:
+    state: directory
+    prefix: "ansible_sealed_secrets."
+  register: sealed_secrets_tmpdir
+
+- name: download controller.yaml
+  get_url:
+    url: "{{ sealed_secrets_controller_downloadurl }}"
+    dest: "{{ sealed_secrets_tmpdir.path }}/controller.yaml"
+
+- name: render namespace template into tmpdir
+  template:
+    src: "kustomization.yaml.j2"
+    dest: "{{ sealed_secrets_tmpdir.path }}/kustomization.yaml"
+
+- name: copy kustomize files to tmpdir
+  synchronize:
+    src: "files/"
+    dest: "{{ sealed_secrets_tmpdir.path }}/"
+
+# https://github.com/ansible-collections/community.kubernetes/issues/163
+# it's either oc apply -k or kustomize build
+# or don't use kustomize at all and use plain jinja2 templates/modify yaml files
+# for now, sticking to oc apply -k
+- name: kustomize deployment for OpenShift
+  command: "oc apply -k {{ sealed_secrets_tmpdir.path }}"
+

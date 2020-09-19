@@ -4,3 +4,5 @@
 # backup and working files of vim
 *~
 .*.swp 
+
+*.local

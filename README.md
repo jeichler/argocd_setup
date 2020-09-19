@@ -33,52 +33,52 @@ validate_certs: "{{ k8s_validate_certs | default(omit) }}"
 
 ### argocd_setup
 
-```yaml
-argocd_operator_channel: "alpha"
-```
+| Variable Name            | Default Value       | Description |
+|:-------------------------|:-------------------:|:------------|
+| argocd_operator_channel | alpha | subscription channel for ArgoCD operator |
+| argocd_operator_approval_strategy | Automatic | manual or automatic operator update |
+| argocd_operator_source | community-operators | catalog source of operator |
+| argocd_namespace | argocd | Namespace where the ArgoCD Operator will be installed and ArgoCD will be configured. This namespace will be created if it does not exist. |
+| argocd_groups | see [values in](roles/argocd_setup/defaults/main.yaml) | by default the OpenShift groups argoadmins and argousers will be created. If you define this var, you may want to change the group names and specify concrete users for the groups.|
+| argocd_name | argo | Name of the ArgoCD CR |
+| argocd_insecure | False | value for `spec.server.insecure` in the ArgoCD CR. We set it to false by default to simply use OCP's router edge termination |
+| argocd_route | `argo.<basedomain of default ingresscontroller>` | hostname of the route for ArgoCD |
 
-Channel for the ArgoCD operator.
+Optionally you can configure intitial repos and repository credentials along the way.
+Check the respectice [comments in](roles/argocd_setup/defaults/main.yaml) to see how this can be configured.
 
-```yaml
-argocd_operator_approval_strategy: "Automatic"
-```
+### sealed_secrets_setup
 
-Approval strategy for updates of the ArgoCD operator.
+Most of the work has been [provided already](https://github.com/rahmed-rh/oc4-learn/tree/master/secret-managment/sealed-secrets), I just put it into ansible.
 
-```yaml
-argocd_operator_source: "community-operators"
-```
+WARNING: it is required to be logging in to the respective cluster before executing this role.
 
-Operator source for the ArgoCD operator.
-
-```yaml
-argocd_namespace: "argocd"
-```
-
-Namespace where the ArgoCD Operator will be installed and ArgoCD will be configured.
+This role aims at setting up [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets). The following configuration options exist:
 
 ```yaml
-argocd_groups:
-  - name: argoadmins
-    permission: admin
-    users: []
-  - name: argousers
-    permission: readonly
-    users: []
+sealedsecrets_version: v0.12.5
 ```
-
-Used to configure RBAC. The groups are configured as policy in ArgoCD, but will also be created in Openshift if not present. The list of users will be added to the groups respectively in OCP.
-
 
 ```yaml
-argocd_name: "argo"
+sealed_secrets_controller_downloadurl: "https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/controller.yaml"
 ```
-
-Name of the CustomResource "ArgoCD" which will be created to spin up ArgoCD.
-
 
 ```yaml
-argocd_dex_version: "v2.22.0-openshift"
+sealed_secrets_binary_path: "/usr/local/bin/kubeseal"
 ```
 
-Defines which image version to use for the dex server.
+```yaml
+sealed_secrets_kubeseal_downloadurl: "https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/kubeseal-linux-amd64"
+```
+
+```yaml
+sealed_secrets_namespace: sealed-secrets
+```
+
+```yaml
+# when both are specified, we run the BYO certificates scenario as described here:
+# https://github.com/bitnami-labs/sealed-secrets/blob/v0.12.5/docs/bring-your-own-certificates.md
+# sealed_secrets_private_key: "/path/to/privatekey"
+# sealed_secrets_public_key: "/path/to/publickey"
+sealed_secret_custom_cert_secretname: sealed-secret-custom-cert
+```
