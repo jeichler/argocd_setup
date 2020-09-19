@@ -1,5 +1,5 @@
 ---
-sealedsecrets_version: v0.12.4
+sealedsecrets_version: v0.12.5
 
 sealed_secrets_controller_downloadurl: https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/controller.yaml
 

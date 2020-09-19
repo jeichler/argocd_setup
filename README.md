@@ -1,15 +1,19 @@
 # Ansible Collection - jeichler.argocd_ocp
 
 This collection will allow you to install and configure [ArgoCD](https://argoproj.github.io/argo-cd/) on your OpenShift 4 cluster.
-It was tested with OCP 4.5. It is assumed that OpenShift Oauth is used for the login.
+It was tested with OCP 4.5. It is assumed that OpenShift Oauth is used for the login to ArgoCD.
 
 It is very early work and therefore has limited functionality, PR's and feature requests are welcome :)
 
-An example is available under the l[playbooks directory](playbooks/).
-
 ## Required python modules
 
-You require the python-openshift or python-k8 module.
+### argocd_setup
+
+The requirements listed here: <https://docs.ansible.com/ansible/latest/modules/k8s_module.html>
+
+### sealed_secrets_setup
+
+The requirements listed here: <https://docs.ansible.com/ansible/latest/modules/k8s_module.html>
 
 ## K8s authentication
 
@@ -39,13 +43,13 @@ validate_certs: "{{ k8s_validate_certs | default(omit) }}"
 | argocd_operator_approval_strategy | Automatic | manual or automatic operator update |
 | argocd_operator_source | community-operators | catalog source of operator |
 | argocd_namespace | argocd | Namespace where the ArgoCD Operator will be installed and ArgoCD will be configured. This namespace will be created if it does not exist. |
-| argocd_groups | see [values in](roles/argocd_setup/defaults/main.yaml) | by default the OpenShift groups argoadmins and argousers will be created. If you define this var, you may want to change the group names and specify concrete users for the groups.|
+| argocd_groups | see [values in defaults](roles/argocd_setup/defaults/main.yaml) | by default the OpenShift groups argoadmins and argousers will be created. If you define this var, you may want to change the group names and specify concrete users for the groups.|
 | argocd_name | argo | Name of the ArgoCD CR |
 | argocd_insecure | False | value for `spec.server.insecure` in the ArgoCD CR. We set it to false by default to simply use OCP's router edge termination |
 | argocd_route | `argo.<basedomain of default ingresscontroller>` | hostname of the route for ArgoCD |
 
 Optionally you can configure intitial repos and repository credentials along the way.
-Check the respectice [comments in](roles/argocd_setup/defaults/main.yaml) to see how this can be configured.
+Check the respectice [comments in defaults](roles/argocd_setup/defaults/main.yaml) to see how this can be configured.
 
 ### sealed_secrets_setup
 
