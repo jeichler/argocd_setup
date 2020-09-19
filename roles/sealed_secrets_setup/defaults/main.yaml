@@ -1,0 +1,19 @@
+---
+sealedsecrets_version: v0.12.5
+
+sealed_secrets_controller_downloadurl: https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/controller.yaml
+
+sealed_secrets_binary_path: "/usr/local/bin/kubeseal"
+sealed_secrets_kubeseal_downloadurl: https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/kubeseal-linux-amd64
+
+sealed_secrets_namespace: sealed-secrets
+
+# when both are specified, we run the BYO certificates scenario as described here:
+# https://github.com/bitnami-labs/sealed-secrets/blob/v0.12.5/docs/bring-your-own-certificates.md
+# sealed_secrets_private_key: |
+  # ...content of private key - ideally it is vaulted!
+  # ...
+# sealed_secrets_public_key: |
+  # ...content of public key
+  # ...
+sealed_secret_custom_cert_secretname: sealed-secret-custom-cert

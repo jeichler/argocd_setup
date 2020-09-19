@@ -5,15 +5,59 @@ argocd_operator_approval_strategy: "Automatic"
 argocd_operator_source: "community-operators"
 
 argocd_namespace: "argocd"
+# set to False if you don't want the ArgoCD service account to have clusteradmin privilges
+# keep in mind that they are required for managing the entire cluster
+argocd_is_clusteradmin: True
+
+# this will use the route edge termination
+# when False,it will use the certs of argo-server
+argocd_insecure: True
+
 argocd_groups:
   - name: argoadmins
     permission: admin
     users:
-      - jeichler
+      - kubeadmin
   - name: argousers
     permission: readonly
-    users:
-      - pcfe
+    users: []
 
 argocd_name: "argo"
-argocd_dex_version: "v2.22.0-openshift"
+
+# these secrets are created when bootstrapping ArgoCD
+# they won't be created as sealed secrets or similar since we're still in the bootstrapping / init phase
+# those are the secrets you likely need for the initialRepositories|repositoryCredentials
+# simply specify it as empty list or don't use this var at all if you have this covered elsehwere.
+argocd_initial_secrets: []
+# - name: git-ssh-key
+#   key: sshPrivateKey
+#   value: |
+#     {{ initial_repo_ssh_key }}
+# just as an example
+
+# see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#initial-repositories
+argocd_initial_repositories: []
+# - type: git
+#   url: git@mygitserver/repo.git
+#   insecureIgnoreHostKey: true
+#   insecure: true
+#   sshPrivateKeySecret:
+#     key: sshPrivateKey
+#     name: git-ssh-key
+# just as an example
+
+# see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#repository-credentials-example
+argocd_repository_credentials: []
+# - sshPrivateKeySecret:
+#     key: sshPrivateKey
+#     name: my-ssh-secret
+#   type: git
+#   url: ssh://git@gitlab.com/my-org/
+
+# FIXME: does not work yet
+# see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#initial-ssh-known-hosts
+# argocd_initial_known_hosts:
+  # excludedefaulthosts: false
+  # keys: |
+  #   my-git.org ssh-rsa AAAAB3NzaC...
+  #   my-git.com ssh-rsa AAAAB3NzaC...

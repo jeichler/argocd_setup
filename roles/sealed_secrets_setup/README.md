@@ -24,23 +24,15 @@ Example Playbook
 ```yaml
 
 # Example usage:
-# ansible-playbook -i yourplaybook.yaml -e k8s_kubeconfig=<pathtokubeconfig>
-- name: install argocd
-  hosts: localhost
-  gather_facts: False
+# ansible-playbook -i yourplaybook.yaml -e k8s_kubeconfig=<pathtokubeconfig> --ask-become-pass
 
-# ideally you define the vars in an inventory
+- hosts: localhost
+  gather_facts: false
   roles:
-    - role: jeichler.argocd_ocp.argocd_setup
-      vars:
-        argocd_groups:
-        - name: argoadmins
-          permission: admin
-          users:
-            - jeichler
-        - name: argousers
-          permission: readonly
-          users: []
+  - role: jeichler.argocd_ocp.sealed_secrets_setup
+    vars:
+      sealed_secrets_private_key: "{{ lookup('file', '/tmp/certs/mytls.key') }}"
+      sealed_secrets_public_key: "{{ lookup('file', '/tmp/certs/mytls.crt') }}"
 
 ```
 
