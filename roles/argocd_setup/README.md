@@ -1,17 +1,17 @@
 Role Name
 =========
 
-see <https://github.com/jeichler/ansible_argocd_setup/blob/master/README.md>
+see <https://github.com/jeichler/ansible_argocd_ocp/blob/master/README.md>
 
 Requirements
 ------------
 
-see <https://github.com/jeichler/ansible_argocd_setup/blob/master/README.md>
+see <https://github.com/jeichler/ansible_argocd_ocp/blob/master/README.md>
 
 Role Variables
 --------------
 
-see <https://github.com/jeichler/ansible_argocd_setup/blob/master/README.md>
+see <https://github.com/jeichler/ansible_argocd_ocp/blob/master/README.md>
 
 Dependencies
 ------------
