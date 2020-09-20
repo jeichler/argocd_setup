@@ -35,6 +35,8 @@ argocd_initial_secrets: []
 #     {{ initial_repo_ssh_key }}
 # just as an example
 
+manage_intial_secrets_with_sealedsecrets: False
+
 # see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#initial-repositories
 argocd_initial_repositories: []
 # - type: git
