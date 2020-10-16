@@ -35,6 +35,8 @@ argocd_initial_secrets: []
 #     {{ initial_repo_ssh_key }}
 # just as an example
 
+# this will add the sealed secrets annotation to your initial secrets
+# to allow you to later on manage it wth sealed secrets if you wish to
 manage_intial_secrets_with_sealedsecrets: False
 
 # see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#initial-repositories
@@ -58,8 +60,11 @@ argocd_repository_credentials: []
 
 # FIXME: does not work yet
 # see https://argocd-operator.readthedocs.io/en/latest/reference/argocd/#initial-ssh-known-hosts
-# argocd_initial_known_hosts:
-  # excludedefaulthosts: false
-  # keys: |
-  #   my-git.org ssh-rsa AAAAB3NzaC...
-  #   my-git.com ssh-rsa AAAAB3NzaC...
+# this is where we deviate a bit to make it easier in terms of template rendering.
+# for the keys, just add the keys as a list of strings - we'll render it correctly.
+argocd_initial_known_hosts:
+  excludedefaulthosts: false
+  keys: []
+  # - my-git.com ssh-rsa AAAAB3NzaC...
+
+argocd_initial_seed_app:

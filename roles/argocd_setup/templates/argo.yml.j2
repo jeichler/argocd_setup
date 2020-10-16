@@ -9,19 +9,19 @@ spec:
   rbac:
     defaultPolicy: 'role:readonly'
     policy: |
-{% for argogroup in argocd_groups %}
+{%  for argogroup in argocd_groups %}
       g, {{ argogroup.name }}, role:{{ argogroup.permission }}
-{% endfor %}
+{%  endfor %}
     scopes: '[groups]'
   server:
     host: "{{ argocd_route }}"
     insecure: {{ argocd_insecure }}
     route:
       enabled: true
-{% if argocd_insecure | bool == True %}
+{%  if argocd_insecure | bool == True %}
       tls:
         termination: edge
-{% endif %}
+{%  endif %}
 {% if argocd_initial_repositories is defined and argocd_initial_repositories | length > 0 %}
   initialRepositories: |
     {{ argocd_initial_repositories | to_nice_yaml(indent=0) | indent(4) }}
@@ -30,9 +30,13 @@ spec:
   repositoryCredentials: |
     {{ argocd_repository_credentials | to_nice_yaml(indent=0) | indent(4) }}
 {% endif %}
-{# 
-{% if argocd_initial_known_hosts is defined -%} # FIXME, does not work with the pipe in the var
+
+{% if argocd_initial_known_hosts is defined and argocd_initial_known_hosts['keys'] | length > 0 %}
   initialSSHKnownHosts:
-    {{ argocd_initial_known_hosts | to_nice_yaml(indent=0) | indent(4) }}
-{%- endif %}
-#}
+    excludedefaulthosts: {{ argocd_initial_known_hosts.excludedefaulthosts }}
+    keys: |
+{%  for argocd_initial_known_host in argocd_initial_known_hosts['keys'] %}
+      {{ argocd_initial_known_host }}
+{%  endfor %}
+{% endif %}
+

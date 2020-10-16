@@ -5,6 +5,54 @@ It was tested with OCP 4.5. It is assumed that OpenShift Oauth is used for the l
 
 It is very early work and therefore has limited functionality, PR's and feature requests are welcome :)
 
+## For the impatient ones
+
+### Setup ArgoCD
+
+Playbook:
+
+```yaml
+# ansible-playbook -i yourplaybook.yaml -e k8s_kubeconfig=<pathtokubeconfig>
+- name: install argocd
+  hosts: localhost
+  gather_facts: False
+
+  roles:
+    - role: jeichler.argocd_ocp.argocd_setup
+```
+
+In the inventory:
+
+```yaml
+argocd_groups:
+- name: argoadmins
+  permission: admin
+  users:
+    - jeichler
+- name: argousers
+  permission: readonly
+  users: []
+```
+
+Check the [defaults](https://github.com/jeichler/argocd_setup/blob/master/roles/argocd_setup/defaults/main.yaml) to see what can be configured.
+
+### Setup Bitnami Sealed Secrets
+
+```yaml
+# Example usage:
+# ansible-playbook -i yourplaybook.yaml -e k8s_kubeconfig=<pathtokubeconfig> --ask-become-pass
+
+- hosts: localhost
+  gather_facts: false
+  roles:
+  - role: jeichler.argocd_ocp.sealed_secrets_setup
+    vars:
+      sealed_secrets_private_key: "{{ lookup('file', '/tmp/certs/mytls.key') }}"
+      sealed_secrets_public_key: "{{ lookup('file', '/tmp/certs/mytls.crt') }}"
+```
+
+Check the [defaults](https://github.com/jeichler/argocd_setup/blob/master/roles/sealed_secrets_setup/defaults/main.yaml) to see what can be configured.
+
 ## Required python modules
 
 ### argocd_setup
