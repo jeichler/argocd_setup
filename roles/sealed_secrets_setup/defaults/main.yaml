@@ -1,9 +1,12 @@
 ---
-sealedsecrets_version: v0.12.5
+sealedsecrets_version: v0.15.0
 
-sealed_secrets_controller_downloadurl: https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/controller.yaml
+# define this when you want to define a specific chart version
+# sealedsecrets_helm_chart_version:
 
 sealed_secrets_binary_path: "/usr/local/bin/kubeseal"
+sealed_secrets_binary_become: False
+
 sealed_secrets_kubeseal_downloadurl: https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/kubeseal-linux-amd64
 
 sealed_secrets_namespace: sealed-secrets

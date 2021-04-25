@@ -113,10 +113,6 @@ sealedsecrets_version: v0.12.5
 ```
 
 ```yaml
-sealed_secrets_controller_downloadurl: "https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ sealedsecrets_version }}/controller.yaml"
-```
-
-```yaml
 sealed_secrets_binary_path: "/usr/local/bin/kubeseal"
 ```
 
