@@ -1,3 +1,5 @@
+commandArgs:
+  - '--update-status'
 securityContext:
     runAsUser:
     fsGroup:
